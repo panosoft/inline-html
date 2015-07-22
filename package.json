@@ -14,7 +14,7 @@
     "datauri": "^0.7.1",
     "inline-css-url": "file:../inline-css-url",
     "inline-less": "file:../inline-less",
-    "local-path": "file:../local-path",
+    "is-local-path": "0.0.1",
     "mz": "^2.0.0",
     "string": "^3.3.0"
   }
