@@ -1,0 +1,8 @@
+body {
+    border: solid 4px green;
+}
+#import {
+    background-image: url('./person.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
