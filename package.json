@@ -1,7 +1,8 @@
 {
   "name": "inline-html",
   "version": "0.0.0",
-  "description": "",
+  "description": "Inline an html file.",
+  "repository": "panosoft/inline-html",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
