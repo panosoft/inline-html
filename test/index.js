@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 
 var filepath = path.resolve(__dirname, './fixtures/index.html');
-var options = {};
+var options = {verbose: true};
 
 inline(filepath, options)
 	.then(function (html) {
