@@ -17,8 +17,8 @@
     "less": "^2.5.1",
     "lodash": "^3.10.0",
     "mz": "^2.0.0",
-    "rework": "^1.0.1",
-    "rework-plugin-url": "^1.0.1",
+    "postcss": "^4.1.16",
+    "postcss-url": "^4.0.0",
     "string": "^3.3.0"
   }
 }
