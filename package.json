@@ -1,6 +1,6 @@
 {
   "name": "inline-html",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inline an html file.",
   "repository": "panosoft/inline-html",
   "main": "lib/index.js",
