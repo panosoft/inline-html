@@ -1,6 +1,6 @@
 # inline-html
 
-Embed local assets into an HTML document.
+Embed local assets in an HTML document.
 
 [![npm](https://img.shields.io/npm/v/inline-html.svg)]()
 [![Travis](https://img.shields.io/travis/panosoft/inline-html.svg)]()
@@ -16,7 +16,6 @@ Embed local assets into an HTML document.
 This:
 
 	var inlineHtml = require('inline-html');
-
 	inlineHtml('path/to/file.html').then(function (html) {
 		...
 	});
@@ -44,14 +43,14 @@ Into this:
 
 Where:
 
-`main.less`
+- `main.less`
 
-	@import (inline) 'main.css';
-    div { background-image: url('path/to/file'); }
+		@import (inline) 'main.css';
+		div { background-image: url('path/to/file'); }
 
-`main.css`
+- `main.css`
 
-	@font-face { src: url('path/to/file'); }
+		@font-face { src: url('path/to/file'); }
 
 ## API
 
@@ -83,6 +82,8 @@ Returns a `Promise` that is fulfilled with an `html` string or a `results` objec
 		- `false`: promise is resolved with `html`
 
 #### Results object
+
+The `Promise` returned by this function is optionally fulfilled with a `results` object that has the following properties:
 
 - `html` - The inlined html
 - `files` - An array of filenames of the inlined local assets.

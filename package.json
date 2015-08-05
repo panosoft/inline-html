@@ -1,7 +1,7 @@
 {
   "name": "inline-html",
   "version": "0.1.1",
-  "description": "Inline an html file.",
+  "description": "Embed local assets in an HTML document.",
   "repository": "panosoft/inline-html",
   "main": "lib/index.js",
   "scripts": {
