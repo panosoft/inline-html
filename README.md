@@ -56,7 +56,7 @@ Where:
 
 ### inlineHtml( filename [, options] )
 
-Reads an HTML file and inlines all of the following that reference local assets:
+Reads an HTML file and embeds the contents of local assets referenced by the following elements and data types:
 
 - LESS stylesheets - The LESS is compiled and the result is inlined within a `<style>` element.
 
