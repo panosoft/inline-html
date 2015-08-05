@@ -3,9 +3,9 @@
 Embed local assets in an HTML document.
 
 [![npm](https://img.shields.io/npm/v/inline-html.svg)]()
+[![npm](https://img.shields.io/npm/l/inline-html.svg)]()
 [![Travis](https://img.shields.io/travis/panosoft/inline-html.svg)]()
 [![David](https://img.shields.io/david/panosoft/inline-html.svg)]()
-[![npm](https://img.shields.io/npm/l/inline-html.svg)]()
 [![npm](https://img.shields.io/npm/dm/inline-html.svg)]()
 
 ## Installation
