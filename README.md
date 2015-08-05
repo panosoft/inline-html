@@ -5,6 +5,7 @@ Embed local assets in an HTML document.
 [![npm](https://img.shields.io/npm/v/inline-html.svg)]()
 [![Travis](https://img.shields.io/travis/panosoft/inline-html.svg)]()
 [![David](https://img.shields.io/david/panosoft/inline-html.svg)]()
+[![npm](https://img.shields.io/npm/l/inline-html.svg)]()
 [![npm](https://img.shields.io/npm/dm/inline-html.svg)]()
 
 ## Installation
@@ -22,24 +23,24 @@ This:
 
 Turns this:
 
-	<link rel="stylesheet/less" href="main.less" />
+	<link rel="stylesheet/less" href="main.less"/>
 	<style>
 		div { background-image: url('path/to/file'); }
 	</style>
 	<div style="background-image: url('path/to/file');"></div>
-	<img src="path/to/file" />
+	<img src="path/to/file"/>
 
 Into this:
 
 	<style>
 		@font-face { src: url('data:...'); }
-        div { background-image: url('data:...'); }
+		div { background-image: url('data:...'); }
 	</style>
 	<style>
 		div { background-image: url('data:...'); }
 	</style>
 	<div style="background-image: url('data:...');"></div>
-	<img src="data:..." />
+	<img src="data:..."/>
 
 Where:
 
