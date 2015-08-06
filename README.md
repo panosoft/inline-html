@@ -1,6 +1,6 @@
 # inline-html
 
-Embed local assets in an HTML document.
+Inline local assets referenced in an HTML document.
 
 [![npm](https://img.shields.io/npm/v/inline-html.svg)]()
 [![npm](https://img.shields.io/npm/l/inline-html.svg)]()
