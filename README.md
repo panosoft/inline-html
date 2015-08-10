@@ -16,42 +16,52 @@ Inline local assets referenced in an HTML document.
 
 This:
 
-	var inlineHtml = require('inline-html');
-	inlineHtml('path/to/file.html').then(function (html) {
-		...
-	});
+```js
+var inlineHtml = require('inline-html');
+inlineHtml('path/to/file.html').then(function (html) {
+	...
+});
+```
 
 Turns this:
 
-	<link rel="stylesheet/less" href="main.less"/>
-	<style>
-		div { background-image: url('path/to/file'); }
-	</style>
-	<div style="background-image: url('path/to/file');"></div>
-	<img src="path/to/file"/>
+```html
+<link rel="stylesheet/less" href="main.less"/>
+<style>
+	div { background-image: url('path/to/file'); }
+</style>
+<div style="background-image: url('path/to/file');"></div>
+<img src="path/to/file"/>
+```
 
 Into this:
 
-	<style>
-		@font-face { src: url('data:...'); }
-		div { background-image: url('data:...'); }
-	</style>
-	<style>
-		div { background-image: url('data:...'); }
-	</style>
-	<div style="background-image: url('data:...');"></div>
-	<img src="data:..."/>
+```html
+<style>
+	@font-face { src: url('data:...'); }
+	div { background-image: url('data:...'); }
+</style>
+<style>
+	div { background-image: url('data:...'); }
+</style>
+<div style="background-image: url('data:...');"></div>
+<img src="data:..."/>
+```
 
 Where:
 
 - `main.less`
 
-		@import (inline) 'main.css';
-		div { background-image: url('path/to/file'); }
+```css
+@import (inline) 'main.css';
+div { background-image: url('path/to/file'); }
+```
 
 - `main.css`
 
-		@font-face { src: url('path/to/file'); }
+```css
+@font-face { src: url('path/to/file'); }
+```
 
 ## API
 
