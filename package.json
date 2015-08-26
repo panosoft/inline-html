@@ -5,7 +5,7 @@
   "repository": "panosoft/inline-html",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --harmony_arrow_functions"
   },
   "author": "",
   "license": "MIT",
@@ -17,8 +17,13 @@
     "less": "^2.5.1",
     "lodash": "^3.10.0",
     "mz": "^2.0.0",
-    "postcss": "^4.1.16",
+    "postcss": "^5.0.0",
     "postcss-url": "^4.0.0",
     "string": "^3.3.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "chai-as-promised": "^5.1.0",
+    "mocha": "^2.2.5"
   }
 }

@@ -81,7 +81,7 @@ To create the following `html` string:
 ---
 
 <a name="inlineHtml"/>
-### inlineHtml ( filename [, options] )
+### inlineHtml ( html [, options] )
 
 Reads an HTML file and embeds referenced local assets into the HTML.
 
@@ -89,8 +89,9 @@ Returns a `Promise` that is fulfilled with an `html` string or an instance of [`
 
 __Arguments__
 
-- `filename` - The filename of the HTML file to be inlined. Relative file paths are resolved relative to the filename directory.
+- `html` - An HTML string or a filename of an HTML file to inline. Relative file paths are resolved relative to `options.filename` if a string or the filename's directory if a filename.
 - `options`
+	- `filename` - The filename used to resolve relative paths when `html` is a string. If `html` is a string and this option is not provided, relative paths will be resolved relative to the process's current working directory.
 	- `less` - An object containing LESS options to pass to the less compiler. Defaults to `{}`.
 	- `verbose` - A boolean that determines the promises fulfillment value. Supported values are:
 		- `true`: An instance of [`Results`](#Results).
