@@ -159,5 +159,10 @@ describe('inlineHtml', function () {
 		var html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
 		return expect(inline(html(url))).to.eventually.equal(html(uri));
 	});
-
+	it('handle assets with a space in their filename', function () {
+		var filename = path.resolve(__dirname, 'fixtures/file space.txt');
+		var uri = datauri(filename);
+		var html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
+		return expect(inline(html(filename))).to.eventually.equal(html(uri));
+	});
 });
