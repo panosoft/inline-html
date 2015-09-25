@@ -152,6 +152,14 @@ describe('inlineHtml', function () {
 		var html = `<img src="http://test.com/file.txt?query=string#hash"/>`;
 		return expect(inline(html)).to.eventually.equal(html);
 	});
+	it('ignore css url template expression paths', function () {
+		var html = `<style> div { background-image: url({{path}}); }</style>`;
+		return expect(inline(html)).to.eventually.equal(html);
+	});
+	it('ignore img src template expression paths', function () {
+		var html = `<img src="{{path}}"/>`;
+		return expect(inline(html)).to.eventually.equal(html);
+	});
 	it('ignore query strings and hashes on local paths', function () {
 		var filename = path.resolve(__dirname, 'fixtures/file.txt');
 		var url = `${filename}?query=string#hash`;
