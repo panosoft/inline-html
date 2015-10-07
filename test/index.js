@@ -1,9 +1,10 @@
-var inline = require('../lib');
+var co = require('co');
+var datauri = require('datauri');
 var expect = require('chai')
 	.use(require('chai-as-promised'))
 	.expect;
-var datauri = require('datauri');
 var fs = require('fs');
+var inline = require('../lib');
 var path = require('path');
 
 describe('inlineHtml', function () {
@@ -172,5 +173,147 @@ describe('inlineHtml', function () {
 		var uri = datauri(filename);
 		var html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
 		return expect(inline(html(filename))).to.eventually.equal(html(uri));
+	});
+
+	// Error handling
+	// inline-img
+	it('throw error when html image source invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var source = 'missing.png';
+			var html = `<img src="${source}" >`;
+			var resolvedSource = path.resolve(path.dirname(filename), source);
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(resolvedSource);
+			}
+		});
+	});
+	// inline-style
+	it('throw error when html style attribute syntax invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var html = `<div style="background url()"></div>`;
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(filename);
+			}
+		});
+	});
+	it('throw error when html style attribute url invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var url = 'missing.png';
+			var resolvedUrl = path.resolve(path.dirname(filename), url);
+			var html = `<div style="background-image: url('${url}')"></div>`;
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(resolvedUrl);
+			}
+		});
+	});
+	it('throw error when html style syntax invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var html = `<style>div {</style>`;
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(filename);
+			}
+		});
+	});
+	it('throw error when html style url invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var url = 'missing.png';
+			var resolvedUrl = path.resolve(path.dirname(filename), url);
+			var html = `<style>div { background-image: url('${url}'); }</style>`;
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(resolvedUrl);
+			}
+		});
+	});
+	// inline-link-less
+	it('throw error when link href invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'index.html');
+			var href = 'missing.less';
+			var resolvedHref = path.resolve(path.dirname(filename), href);
+			var html = `<link rel="stylesheet/less" href="${href}">`;
+			try {
+				yield inline(html, {filename});
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(resolvedHref);
+			}
+		});
+	});
+	it('throw error when less import invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'fixtures/errors/lessImport/index.html');
+			var lessFilename = path.resolve(path.dirname(filename), 'main.less');
+			try {
+				yield inline(filename);
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(lessFilename);
+				expect(error).to.have.property('files').that.contains(lessFilename);
+			}
+		});
+	});
+	it('throw error when less syntax invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'fixtures/errors/lessSyntax/index.html');
+			var lessFilename = path.resolve(path.dirname(filename), 'main.less');
+			try {
+				yield inline(filename);
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				expect(error).to.have.property('filename').that.equals(lessFilename);
+				expect(error).to.have.property('files').that.contains(lessFilename);
+			}
+		});
+	});
+	it('throw error when less url invalid', () => {
+		return co(function * () {
+			var filename = path.resolve(__dirname, 'fixtures/errors/lessUrl/index.html');
+			var lessFilename = path.resolve(path.dirname(filename), 'main.less');
+			var badUrl = path.resolve(path.dirname(filename), 'missing.png');
+			try {
+				yield inline(filename);
+				throw new Error('No error thrown');
+			}
+			catch (error) {
+				// expect error.filename to be html file, not less file, since images
+				// aren't inlined until after the compiled less has been inlined into the html.
+				expect(error).to.have.property('filename').that.equals(filename);
+				expect(error).to.have.property('files').that.contains(badUrl);
+			}
+		});
 	});
 });
