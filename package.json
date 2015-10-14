@@ -1,6 +1,6 @@
 {
   "name": "inline-html",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "description": "Inline local assets referenced in an HTML document.",
   "repository": "panosoft/inline-html",
   "main": "lib/index.js",
