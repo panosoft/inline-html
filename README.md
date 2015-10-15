@@ -18,6 +18,8 @@ The following HTML elements and CSS data types are inlined:
 
 - CSS url data types - The reference path is replaced with a datauri. These can be used in linked stylesheets, style elements, and element style attributes.
 
+Also, `inline-html` calls can be statically evaluated and included in Browserify bundles using the [`html-inlinify`](https://github.com/panosoft/html-inlinify) transform.
+
 ## Usage
 
 Assuming ...
