@@ -3,10 +3,7 @@
 Inline local assets referenced in an HTML document.
 
 [![npm version](https://img.shields.io/npm/v/inline-html.svg)](https://www.npmjs.com/package/inline-html)
-[![npm license](https://img.shields.io/npm/l/inline-html.svg)](https://www.npmjs.com/package/inline-html)
 [![Travis](https://img.shields.io/travis/panosoft/inline-html.svg)](https://travis-ci.org/panosoft/inline-html)
-[![David](https://img.shields.io/david/panosoft/inline-html.svg)](https://david-dm.org/panosoft/inline-html)
-[![npm downloads](https://img.shields.io/npm/dm/inline-html.svg)](https://www.npmjs.com/package/inline-html)
 
 This library parses HTML, embeds the contents of local assets that are referenced within that HTML, and returns a new inlined HTML string.
 

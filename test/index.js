@@ -203,8 +203,60 @@ describe('inline-html', () => {
 				}
 			});
 		});
+		it('image: include all sources in error.files up until and including invalid source', () => {
+			return co(function * () {
+				var filename = path.resolve(__dirname, 'index.html');
+				var valid = 'fixtures/file.txt';
+				var invalid = 'missing.png';
+				var resolvedInvalid = path.resolve(path.dirname(filename), invalid);
+				var resolvedValid = path.resolve(path.dirname(filename), valid);
+				var html = `
+					<img src="${valid}" >
+					<img src="${invalid}" >
+				`;
+				try {
+					yield inline.html(html, {filename});
+					throw new Error('No error thrown');
+				}
+				catch (error) {
+					expect(error).to.have.property('filename').that.equals(filename);
+					expect(error).to.have.property('files').that.contains(resolvedValid);
+					expect(error).to.have.property('files').that.contains(resolvedInvalid);
+				}
+			});
+		});
 		// inline-style
-		it('throw error when html style attribute syntax invalid', () => {
+		it('throw error when style element syntax invalid', () => {
+			return co(function * () {
+				var filename = path.resolve(__dirname, 'index.html');
+				var html = `<style>div {</style>`;
+				try {
+					yield inline.html(html, {filename});
+					throw new Error('No error thrown');
+				}
+				catch (error) {
+					expect(error).to.have.property('filename').that.equals(filename);
+					expect(error).to.have.property('files').that.contains(filename);
+				}
+			});
+		});
+		it('throw error when html style url invalid', () => {
+			return co(function * () {
+				var filename = path.resolve(__dirname, 'index.html');
+				var url = 'missing.png';
+				var resolvedUrl = path.resolve(path.dirname(filename), url);
+				var html = `<style>div { background-image: url('${url}'); }</style>`;
+				try {
+					yield inline.html(html, {filename});
+					throw new Error('No error thrown');
+				}
+				catch (error) {
+					expect(error).to.have.property('filename').that.equals(filename);
+					expect(error).to.have.property('files').that.contains(resolvedUrl);
+				}
+			});
+		});
+		it('throw error when style attribute syntax invalid', () => {
 			return co(function * () {
 				var filename = path.resolve(__dirname, 'index.html');
 				var html = `<div style="background url()"></div>`;
@@ -234,33 +286,69 @@ describe('inline-html', () => {
 				}
 			});
 		});
-		it('throw error when html style syntax invalid', () => {
+		it('include valid and invalid paths in error.files when html style url invalid', () => {
 			return co(function * () {
 				var filename = path.resolve(__dirname, 'index.html');
-				var html = `<style>div {</style>`;
+				var validUrl = 'fixtures/file.txt';
+				var invalidUrl = 'missing.png';
+				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				var html = `
+					<style>div {background-image: url("${validUrl}");}</style>
+					<style>div { background-image: url('${invalidUrl}'); }</style>
+				`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
 				}
 				catch (error) {
 					expect(error).to.have.property('filename').that.equals(filename);
-					expect(error).to.have.property('files').that.contains(filename);
+					expect(error).to.have.property('files').that.contains(resolvedValidUrl);
+					expect(error).to.have.property('files').that.contains(resolvedInvalidUrl);
 				}
 			});
 		});
-		it('throw error when html style url invalid', () => {
+		it('include valid and invalid paths in error.files when html attribute url invalid', () => {
 			return co(function * () {
 				var filename = path.resolve(__dirname, 'index.html');
-				var url = 'missing.png';
-				var resolvedUrl = path.resolve(path.dirname(filename), url);
-				var html = `<style>div { background-image: url('${url}'); }</style>`;
+				var validUrl = 'fixtures/file.txt';
+				var invalidUrl = 'missing.png';
+				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				var html = `
+					<div style="background-image: url('${validUrl}')"></div>
+					<div style="background-image: url('${invalidUrl}')"></div>
+				`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
 				}
 				catch (error) {
 					expect(error).to.have.property('filename').that.equals(filename);
-					expect(error).to.have.property('files').that.contains(resolvedUrl);
+					expect(error).to.have.property('files').that.contains(resolvedValidUrl);
+					expect(error).to.have.property('files').that.contains(resolvedInvalidUrl);
+				}
+			});
+		});
+		it('include valid and invalid paths in error.files when style element valid and html attribute invalid', () => {
+			return co(function * () {
+				var filename = path.resolve(__dirname, 'index.html');
+				var validUrl = 'fixtures/file.txt';
+				var invalidUrl = 'missing.png';
+				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				var html = `
+					<style>div {background-image: url("${validUrl}");}</style>
+					<div style="background-image: url('${invalidUrl}')"></div>
+				`;
+				try {
+					yield inline.html(html, {filename});
+					throw new Error('No error thrown');
+				}
+				catch (error) {
+					expect(error).to.have.property('filename').that.equals(filename);
+					expect(error).to.have.property('files').that.contains(resolvedValidUrl);
+					expect(error).to.have.property('files').that.contains(resolvedInvalidUrl);
 				}
 			});
 		});
@@ -317,7 +405,6 @@ describe('inline-html', () => {
 			return co(function * () {
 				var filename = path.resolve(__dirname, 'fixtures/index.html');
 				var lessBasename = 'invalidUrl.less';
-				var lessFilename = path.resolve(path.dirname(filename), lessBasename);
 				var badUrl = path.resolve(path.dirname(filename), 'missing.png');
 				var html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
@@ -333,5 +420,4 @@ describe('inline-html', () => {
 			});
 		});
 	});
-
 });
