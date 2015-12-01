@@ -3,6 +3,9 @@
   "version": "0.2.2",
   "description": "Inline local assets referenced in an HTML document.",
   "repository": "panosoft/inline-html",
+  "engines" : {
+    "node" : ">=4.0.0"
+  },
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha",
