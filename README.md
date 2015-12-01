@@ -9,6 +9,8 @@ This library parses HTML, embeds the contents of local assets that are reference
 
 The following HTML elements and CSS data types are inlined:
 
+- Scripts - The source path is read and inlined.
+
 - Images - The source path is replaced with a datauri.
 
 - Linked LESS stylesheets - The LESS is compiled and the result is inlined within a `<style>` element. Note that `@imports` are processed as well.
@@ -20,6 +22,12 @@ Also, `inline-html` calls can be statically evaluated and included in Browserify
 ## Usage
 
 Assuming ...
+
+- `main.js`
+
+	```js
+	var a = 1;
+	```
 
 - `main.less`
 
@@ -42,6 +50,7 @@ var inline = require('inline-html');
 
 co(function * () {
 	var html = `
+		<script src="main.js"></script>
 		<link rel="stylesheet/less" href="main.less"/>
 		<style> div { background-image: url('path/to/file'); } </style>
 		<div style="background-image: url('path/to/file');"></div>
@@ -50,6 +59,9 @@ co(function * () {
 	html = yield inline.html(html);
 	console.log(html);
 	/**
+		<script>
+			var a = 1;
+		</script>
 		<style>
 			@font-face { src: url('data:...'); }
 			div { background-image: url('data:...'); }
