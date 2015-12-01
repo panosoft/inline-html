@@ -1,11 +1,11 @@
-var co = require('co');
-var datauri = require('datauri');
-var expect = require('chai')
+const co = require('co');
+const datauri = require('datauri');
+const expect = require('chai')
 	.use(require('chai-as-promised'))
 	.expect;
-var fs = require('fs');
-var inline = require('../lib');
-var path = require('path');
+const fs = require('fs');
+const inline = require('../lib');
+const path = require('path');
 
 describe('inline-html', () => {
 
@@ -13,19 +13,19 @@ describe('inline-html', () => {
 		it('exists', () => expect(inline).to.have.property('file').that.is.a('function'));
 
 		it('accept html filename', () => {
-			var filename = path.resolve(__dirname, './fixtures/file.txt');
-			var content = fs.readFileSync(filename, 'utf8');
+			const filename = path.resolve(__dirname, './fixtures/file.txt');
+			const content = fs.readFileSync(filename, 'utf8');
 			return expect(inline.file(filename)).to.eventually.equal(content);
 		});
 
 		it('options.filename: always reset to current filename and used for css url path resolution', () => {
-			var filename = path.resolve(__dirname, 'fixtures/css-url.html'); // file contains url path relative to itself
-			var options = { filename: __filename }; // sets filename relative to this test file
+			const filename = path.resolve(__dirname, 'fixtures/css-url.html'); // file contains url path relative to itself
+			const options = { filename: __filename }; // sets filename relative to this test file
 			return expect(inline.file(filename, options)).to.eventually.match(/"data:.*,.*"/);
 		});
 		it('options.filename:  always reset to current filename and used for img src path resolution', () => {
-			var filename = path.resolve(__dirname, 'fixtures/img.html'); // file contains src relative to itself
-			var options = { filename: __filename }; // sets filename relative to this test file
+			const filename = path.resolve(__dirname, 'fixtures/img.html'); // file contains src relative to itself
+			const options = { filename: __filename }; // sets filename relative to this test file
 			return expect(inline.file(filename, options)).to.eventually.match(/"data:.*,.*"/);
 		});
 
@@ -36,72 +36,72 @@ describe('inline-html', () => {
 		it('exists', () => expect(inline).to.have.property('html').that.is.a('function'));
 
 		it('accept html string', () => {
-			var html = 'HTML';
+			const html = 'HTML';
 			return expect(inline.html(html)).to.eventually.equal(html);
 		});
 		it('preserve self closing tags', () => {
-			var html = '<br/>';
+			const html = '<br/>';
 			return expect(inline.html(html)).to.eventually.equal(html);
 		});
 		it('preserve partials', () => {
-			var html = '{{> partial}}';
+			const html = '{{> partial}}';
 			return expect(inline.html(html)).to.eventually.equal(html);
 		});
 		it('preserve helpers', () => {
-			var html = '{{helper}}';
+			const html = '{{helper}}';
 			return expect(inline.html(html)).to.eventually.equal(html);
 		});
 
 		it('options.filename: default to cwd for css url path resolution', () => {
-			var url = 'test/fixtures/file.txt'; // Note: this is relative to cwd
-			var uri = datauri(url);
+			const url = 'test/fixtures/file.txt'; // Note: this is relative to cwd
+			const uri = datauri(url);
 
-			var html = (path) => `<style>div { background-image: url('${path}'); }</style>`;
+			const html = (path) => `<style>div { background-image: url('${path}'); }</style>`;
 			return expect(inline.html(html(url))).to.eventually.equal(html(uri));
 		});
 		it('options.filename: set basepath for css url path resolution', () => {
-			var filename = path.resolve(__dirname, 'fixtures/fake.html');
-			var dirname = path.dirname(filename);
+			const filename = path.resolve(__dirname, 'fixtures/fake.html');
+			const dirname = path.dirname(filename);
 
-			var url = 'file.txt'; // Note: path relative to filename's dirname
-			var uri = datauri(path.resolve(dirname, url));
+			const url = 'file.txt'; // Note: path relative to filename's dirname
+			const uri = datauri(path.resolve(dirname, url));
 
-			var html = (path) => `<style>div { background-image: url('${path}'); }</style>`;
-			var options = { filename: filename };
+			const html = (path) => `<style>div { background-image: url('${path}'); }</style>`;
+			const options = { filename: filename };
 			return expect(inline.html(html(url), options)).to.eventually.equal(html(uri));
 		});
 
 		it('options.filename: default to cwd for img src path resolution', () => {
-			var url = 'test/fixtures/file.txt'; // Note: path relative to cwd
-			var uri = datauri(url);
+			const url = 'test/fixtures/file.txt'; // Note: path relative to cwd
+			const uri = datauri(url);
 
-			var html = (path) => `<img src="${path}"/>`;
+			const html = (path) => `<img src="${path}"/>`;
 			return expect(inline.html(html(url))).to.eventually.equal(html(uri));
 		});
 		it('options.filename: set basepath for img src path resolution', () => {
-			var filename = path.resolve(__dirname, 'fixtures/fake.html');
-			var dirname = path.dirname(filename);
+			const filename = path.resolve(__dirname, 'fixtures/fake.html');
+			const dirname = path.dirname(filename);
 
-			var url = 'file.txt'; // Note: path relative to filename's dirname
-			var uri = datauri(path.resolve(dirname, url));
+			const url = 'file.txt'; // Note: path relative to filename's dirname
+			const uri = datauri(path.resolve(dirname, url));
 
-			var html = (path) => `<img src="${path}"/>`;
-			var options = { filename: filename };
+			const html = (path) => `<img src="${path}"/>`;
+			const options = { filename: filename };
 			return expect(inline.html(html(url), options)).to.eventually.equal(html(uri));
 		});
 
 		it('options.filename: included in results.files for img src if options.verbose true', () => {
-			var filename = path.resolve(__dirname, 'fixtures/file.txt');
-			var html = `<img src="${filename}"/>`;
-			var options = { verbose: true };
+			const filename = path.resolve(__dirname, 'fixtures/file.txt');
+			const html = `<img src="${filename}"/>`;
+			const options = { verbose: true };
 			return expect(inline.html(html, options)).to.eventually.have.property('files')
 				.that.is.an('array')
 				.that.contains(filename);
 		});
 		it('options.filename: included in results.files for css url path if options.verbose true', () => {
-			var filename = path.resolve(__dirname, 'fixtures/file.txt');
-			var html = `<style>div { background-image: url('${filename}'); }</style>`;
-			var options = { verbose: true };
+			const filename = path.resolve(__dirname, 'fixtures/file.txt');
+			const html = `<style>div { background-image: url('${filename}'); }</style>`;
+			const options = { verbose: true };
 			return expect(inline.html(html, options)).to.eventually.have.property('files')
 				.that.is.an('array')
 				.that.contains(filename);
@@ -109,60 +109,60 @@ describe('inline-html', () => {
 
 
 		it('options.verbose: return results object if true', () => {
-			var filename = path.resolve(__dirname, 'fixtures/file.txt');
-			var html = `<img src="${filename}"/>`;
-			var options = { verbose: true };
+			const filename = path.resolve(__dirname, 'fixtures/file.txt');
+			const html = `<img src="${filename}"/>`;
+			const options = { verbose: true };
 			return expect(inline.html(html, options)).to.eventually.be.an('object')
 				.that.contains.keys(['html', 'files']);
 		});
 		it('options.verbose: return html if false', () => {
-			var filename = path.resolve(__dirname, 'fixtures/file.txt');
-			var html = `<img src="${filename}"/>`;
-			var options = { verbose: false };
+			const filename = path.resolve(__dirname, 'fixtures/file.txt');
+			const html = `<img src="${filename}"/>`;
+			const options = { verbose: false };
 			return expect(inline.html(html, options)).to.eventually.be.a('string');
 		});
 		it('options.verbose: default false', () => {
-			var filename = path.resolve(__dirname, 'fixtures/file.txt');
-			var html = `<img src="${filename}"/>`;
+			const filename = path.resolve(__dirname, 'fixtures/file.txt');
+			const html = `<img src="${filename}"/>`;
 			return expect(inline.html(html)).to.eventually.be.a('string');
 		});
 
 
 		describe('css-url', () => {
 			it('inline local url in style element', () => {
-				var filename = path.resolve(__dirname, 'fixtures/file.txt');
-				var html = `<style>div {background-image: url("${filename}");}</style>`;
+				const filename = path.resolve(__dirname, 'fixtures/file.txt');
+				const html = `<style>div {background-image: url("${filename}");}</style>`;
 				return expect(inline.html(html)).to.eventually.match(/data:.*,.*/);
 			});
 			it('inline local url in style attribute', () => {
-				var filename = path.resolve(__dirname, 'fixtures/file.txt');
-				var html = `<div style="background-image: url('${filename}');"></div>`;
+				const filename = path.resolve(__dirname, 'fixtures/file.txt');
+				const html = `<div style="background-image: url('${filename}');"></div>`;
 				return expect(inline.html(html)).to.eventually.match(/data:.*,.*/);
 			});
 			it('ignore remote url', () => {
-				var html = `<style> div { background-image: url('http://test.com/file.txt?query=string#hash'); }</style>`;
+				const html = `<style> div { background-image: url('http://test.com/file.txt?query=string#hash'); }</style>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('ignore template expression url', () => {
-				var html = `<style> div { background-image: url({{path}}); }</style>`;
+				const html = `<style> div { background-image: url({{path}}); }</style>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('ignore url query strings and hashes', () => {
-				var filename = path.resolve(__dirname, 'fixtures/file.txt');
-				var url = `${filename}?query=string#hash`;
-				var uri = datauri(filename);
-				var html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
+				const filename = path.resolve(__dirname, 'fixtures/file.txt');
+				const url = `${filename}?query=string#hash`;
+				const uri = datauri(filename);
+				const html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
 				return expect(inline.html(html(url))).to.eventually.equal(html(uri));
 			});
 			it('handle url with spaces', () => {
-				var filename = path.resolve(__dirname, 'fixtures/file space.txt');
-				var uri = datauri(filename);
-				var html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
+				const filename = path.resolve(__dirname, 'fixtures/file space.txt');
+				const uri = datauri(filename);
+				const html = (source) => `<style> div { background-image: url('${source}'); }</style>`;
 				return expect(inline.html(html(filename))).to.eventually.equal(html(uri));
 			});
 			it('throw when syntax invalid in style element', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var html = `<style>div {</style>`;
+				const filename = path.resolve(__dirname, 'index.html');
+				const html = `<style>div {</style>`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -173,8 +173,8 @@ describe('inline-html', () => {
 				}
 			}));
 			it('throw when syntax invalid in style attribute', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var html = `<div style="background url()"></div>`;
+				const filename = path.resolve(__dirname, 'index.html');
+				const html = `<div style="background url()"></div>`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -185,10 +185,10 @@ describe('inline-html', () => {
 				}
 			}));
 			it('throw when url invalid in style element', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var url = 'missing.png';
-				var resolvedUrl = path.resolve(path.dirname(filename), url);
-				var html = `<style>div { background-image: url('${url}'); }</style>`;
+				const filename = path.resolve(__dirname, 'index.html');
+				const url = 'missing.png';
+				const resolvedUrl = path.resolve(path.dirname(filename), url);
+				const html = `<style>div { background-image: url('${url}'); }</style>`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -199,10 +199,10 @@ describe('inline-html', () => {
 				}
 			}));
 		it('throw when url invalid in style attribute ', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var url = 'missing.png';
-				var resolvedUrl = path.resolve(path.dirname(filename), url);
-				var html = `<div style="background-image: url('${url}')"></div>`;
+				const filename = path.resolve(__dirname, 'index.html');
+				const url = 'missing.png';
+				const resolvedUrl = path.resolve(path.dirname(filename), url);
+				const html = `<div style="background-image: url('${url}')"></div>`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -213,12 +213,12 @@ describe('inline-html', () => {
 				}
 			}));
 			it('include all urls in error.files up until and including invalid url in style element', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var validUrl = 'fixtures/file.txt';
-				var invalidUrl = 'missing.png';
-				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
-				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
-				var html = `
+				const filename = path.resolve(__dirname, 'index.html');
+				const validUrl = 'fixtures/file.txt';
+				const invalidUrl = 'missing.png';
+				const resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				const resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				const html = `
 					<style>div {background-image: url('${validUrl}');}</style>
 					<style>div {background-image: url('${invalidUrl}');}</style>
 				`;
@@ -233,12 +233,12 @@ describe('inline-html', () => {
 				}
 			}));
 			it('include all urls in error.files up until and including invalid url in style attribute', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var validUrl = 'fixtures/file.txt';
-				var invalidUrl = 'missing.png';
-				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
-				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
-				var html = `
+				const filename = path.resolve(__dirname, 'index.html');
+				const validUrl = 'fixtures/file.txt';
+				const invalidUrl = 'missing.png';
+				const resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				const resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				const html = `
 					<div style="background-image: url('${validUrl}')"></div>
 					<div style="background-image: url('${invalidUrl}')"></div>
 				`;
@@ -253,12 +253,12 @@ describe('inline-html', () => {
 				}
 			}));
 			it('include all urls in error.files up until and including invalid url when style element valid and style attribute invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var validUrl = 'fixtures/file.txt';
-				var invalidUrl = 'missing.png';
-				var resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
-				var resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
-				var html = `
+				const filename = path.resolve(__dirname, 'index.html');
+				const validUrl = 'fixtures/file.txt';
+				const invalidUrl = 'missing.png';
+				const resolvedInvalidUrl = path.resolve(path.dirname(filename), invalidUrl);
+				const resolvedValidUrl = path.resolve(path.dirname(filename), validUrl);
+				const html = `
 					<style>div {background-image: url("${validUrl}");}</style>
 					<div style="background-image: url('${invalidUrl}')"></div>
 				`;
@@ -276,23 +276,23 @@ describe('inline-html', () => {
 
 		describe('img', () => {
 			it('inline img src', () => {
-				var filename = path.resolve(__dirname, 'fixtures/file.txt');
-				var html = `<img src="${filename}"/>`;
+				const filename = path.resolve(__dirname, 'fixtures/file.txt');
+				const html = `<img src="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/data:.*,.*/);
 			});
 			it('ignore img src remote paths', () => {
-				var html = `<img src="http://test.com/file.txt?query=string#hash"/>`;
+				const html = `<img src="http://test.com/file.txt?query=string#hash"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('ignore img src template expression paths', () => {
-				var html = `<img src="{{path}}"/>`;
+				const html = `<img src="{{path}}"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('throw when src invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var source = 'missing.png';
-				var html = `<img src="${source}" >`;
-				var resolvedSource = path.resolve(path.dirname(filename), source);
+				const filename = path.resolve(__dirname, 'index.html');
+				const source = 'missing.png';
+				const html = `<img src="${source}" >`;
+				const resolvedSource = path.resolve(path.dirname(filename), source);
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -303,12 +303,12 @@ describe('inline-html', () => {
 				}
 			}));
 			it('include all sources in error.files up until and including invalid source', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var valid = 'fixtures/file.txt';
-				var invalid = 'missing.png';
-				var resolvedInvalid = path.resolve(path.dirname(filename), invalid);
-				var resolvedValid = path.resolve(path.dirname(filename), valid);
-				var html = `
+				const filename = path.resolve(__dirname, 'index.html');
+				const valid = 'fixtures/file.txt';
+				const invalid = 'missing.png';
+				const resolvedInvalid = path.resolve(path.dirname(filename), invalid);
+				const resolvedValid = path.resolve(path.dirname(filename), valid);
+				const html = `
 					<img src="${valid}">
 					<img src="${invalid}">
 				`;
@@ -326,21 +326,21 @@ describe('inline-html', () => {
 
 		describe('link-less', () => {
 			it('inline link less', () => {
-				var filename = path.resolve(__dirname, 'fixtures/basic.less');
-				var html = `<link rel="stylesheet/less" href="${filename}"/>`;
+				const filename = path.resolve(__dirname, 'fixtures/basic.less');
+				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/);
 			});
 			it('inline link less imports', () => {
-				var filename = path.resolve(__dirname, 'fixtures/import.less');
-				var html = `<link rel="stylesheet/less" href="${filename}"/>`;
+				const filename = path.resolve(__dirname, 'fixtures/import.less');
+				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/)
 					.and.not.match(/@import/);
 			});
 			it('throw error when link href invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'index.html');
-				var href = 'missing.less';
-				var resolvedHref = path.resolve(path.dirname(filename), href);
-				var html = `<link rel="stylesheet/less" href="${href}">`;
+				const filename = path.resolve(__dirname, 'index.html');
+				const href = 'missing.less';
+				const resolvedHref = path.resolve(path.dirname(filename), href);
+				const html = `<link rel="stylesheet/less" href="${href}">`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -351,10 +351,10 @@ describe('inline-html', () => {
 				}
 			}));
 			it('throw error when less import invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'fixtures/index.html');
-				var lessBasename = 'invalidImport.less';
-				var lessFilename = path.resolve(path.dirname(filename), lessBasename);
-				var html = `<link rel="stylesheet/less" href="${lessBasename}">`;
+				const filename = path.resolve(__dirname, 'fixtures/index.html');
+				const lessBasename = 'invalidImport.less';
+				const lessFilename = path.resolve(path.dirname(filename), lessBasename);
+				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -365,10 +365,10 @@ describe('inline-html', () => {
 				}
 			}));
 			it('throw error when less syntax invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'fixtures/index.html');
-				var lessBasename = 'invalidSyntax.less';
-				var lessFilename = path.resolve(path.dirname(filename), lessBasename);
-				var html = `<link rel="stylesheet/less" href="${lessBasename}">`;
+				const filename = path.resolve(__dirname, 'fixtures/index.html');
+				const lessBasename = 'invalidSyntax.less';
+				const lessFilename = path.resolve(path.dirname(filename), lessBasename);
+				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -379,10 +379,10 @@ describe('inline-html', () => {
 				}
 			}));
 			it('throw error when less url invalid', () => co(function * () {
-				var filename = path.resolve(__dirname, 'fixtures/index.html');
-				var lessBasename = 'invalidUrl.less';
-				var badUrl = path.resolve(path.dirname(filename), 'missing.png');
-				var html = `<link rel="stylesheet/less" href="${lessBasename}">`;
+				const filename = path.resolve(__dirname, 'fixtures/index.html');
+				const lessBasename = 'invalidUrl.less';
+				const badUrl = path.resolve(path.dirname(filename), 'missing.png');
+				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
@@ -398,24 +398,24 @@ describe('inline-html', () => {
 
 		describe('script', () => {
 			it('inline local src', () => {
-				var source = path.resolve(__dirname, 'fixtures/file.txt');
-				var html = `<script src="${source}"></script>`;
-				var contents = fs.readFileSync(source, 'utf8');
+				const source = path.resolve(__dirname, 'fixtures/file.txt');
+				const html = `<script src="${source}"></script>`;
+				const contents = fs.readFileSync(source, 'utf8');
 				return expect(inline.html(html)).to.eventually.equal(`<script>${contents}</script>`);
 			});
 			it('ignore remote src', () => {
-				var html = `<script src="http://test.com/file.txt?query=string#hash"/>`;
+				const html = `<script src="http://test.com/file.txt?query=string#hash"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('ignore template expression src', () => {
-				var html = `<script src="{{path}}"/>`;
+				const html = `<script src="{{path}}"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
 			it('throw when source invalid', () => co(function * () {
-					var filename = path.resolve(__dirname, 'index.html');
-					var source = 'missing.js';
-					var html = `<script src="${source}"></script>`;
-					var resolvedSource = path.resolve(path.dirname(filename), source);
+					const filename = path.resolve(__dirname, 'index.html');
+					const source = 'missing.js';
+					const html = `<script src="${source}"></script>`;
+					const resolvedSource = path.resolve(path.dirname(filename), source);
 					try {
 						yield inline.html(html, {filename});
 						throw new Error('No error thrown');
@@ -428,12 +428,12 @@ describe('inline-html', () => {
 			);
 			it('include all sources in error.files up until and including invalid source', () => {
 				return co(function * () {
-					var filename = path.resolve(__dirname, 'index.html');
-					var valid = 'fixtures/file.txt';
-					var invalid = 'missing.js';
-					var resolvedInvalid = path.resolve(path.dirname(filename), invalid);
-					var resolvedValid = path.resolve(path.dirname(filename), valid);
-					var html = `
+					const filename = path.resolve(__dirname, 'index.html');
+					const valid = 'fixtures/file.txt';
+					const invalid = 'missing.js';
+					const resolvedInvalid = path.resolve(path.dirname(filename), invalid);
+					const resolvedValid = path.resolve(path.dirname(filename), valid);
+					const html = `
 						<script src="${valid}"></script>
 						<script src="${invalid}"></script>
 					`;
