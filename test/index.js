@@ -336,6 +336,12 @@ describe('inline-html', () => {
 				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/)
 					.and.not.match(/@import/);
 			});
+			it('rebase urls relative to html filename', () => {
+				const filename = path.resolve(__dirname, 'index.html');
+				const href = 'fixtures/import.less';
+				const html = `<link rel="stylesheet/less" href="${href}"/>`;
+				return expect(inline.html(html, { filename })).to.eventually.match(/<style>[^]*<\/style>/);
+			});
 			it('throw error when link href invalid', () => co(function * () {
 				const filename = path.resolve(__dirname, 'index.html');
 				const href = 'missing.less';
@@ -352,7 +358,7 @@ describe('inline-html', () => {
 			}));
 			it('throw error when less import invalid', () => co(function * () {
 				const filename = path.resolve(__dirname, 'fixtures/index.html');
-				const lessBasename = 'invalidImport.less';
+				const lessBasename = 'invalid-import.less';
 				const lessFilename = path.resolve(path.dirname(filename), lessBasename);
 				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
@@ -366,7 +372,7 @@ describe('inline-html', () => {
 			}));
 			it('throw error when less syntax invalid', () => co(function * () {
 				const filename = path.resolve(__dirname, 'fixtures/index.html');
-				const lessBasename = 'invalidSyntax.less';
+				const lessBasename = 'invalid-syntax.less';
 				const lessFilename = path.resolve(path.dirname(filename), lessBasename);
 				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
@@ -380,7 +386,7 @@ describe('inline-html', () => {
 			}));
 			it('throw error when less url invalid', () => co(function * () {
 				const filename = path.resolve(__dirname, 'fixtures/index.html');
-				const lessBasename = 'invalidUrl.less';
+				const lessBasename = 'invalid-url.less';
 				const badUrl = path.resolve(path.dirname(filename), 'missing.png');
 				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
 				try {
