@@ -275,16 +275,16 @@ describe('inline-html', () => {
 		});
 
 		describe('img', () => {
-			it('inline img src', () => {
+			it('inline local source', () => {
 				const filename = path.resolve(__dirname, 'fixtures/file.txt');
 				const html = `<img src="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/data:.*,.*/);
 			});
-			it('ignore img src remote paths', () => {
+			it('ignore remote source', () => {
 				const html = `<img src="http://test.com/file.txt?query=string#hash"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
-			it('ignore img src template expression paths', () => {
+			it('ignore template expression source', () => {
 				const html = `<img src="{{path}}"/>`;
 				return expect(inline.html(html)).to.eventually.equal(html);
 			});
@@ -325,20 +325,28 @@ describe('inline-html', () => {
 		});
 
 		describe('link-less', () => {
-			it('inline link less', () => {
+			it('inline local href', () => {
 				const filename = path.resolve(__dirname, 'fixtures/basic.less');
 				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/);
 			});
-			it('inline link less imports', () => {
-				const filename = path.resolve(__dirname, 'fixtures/import.less');
+			it('ignore remote href', () => {
+				const html = `<link rel="stylesheet/less" href="http://test.com/main.less"/>`;
+				return expect(inline.html(html)).to.eventually.equal(html);
+			});
+			it('ignore template expression href', () => {
+				const html = `<link rel="stylesheet/less" href="{{href}}"/>`;
+				return expect(inline.html(html)).to.eventually.equal(html);
+			});
+			it('inline local nested imports', () => {
+				const filename = path.resolve(__dirname, 'fixtures/nested-import.less');
 				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
 				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/)
 					.and.not.match(/@import/);
 			});
 			it('rebase urls relative to html filename', () => {
 				const filename = path.resolve(__dirname, 'index.html');
-				const href = 'fixtures/import.less';
+				const href = 'fixtures/basic.less';
 				const html = `<link rel="stylesheet/less" href="${href}"/>`;
 				return expect(inline.html(html, { filename })).to.eventually.match(/<style>[^]*<\/style>/);
 			});
