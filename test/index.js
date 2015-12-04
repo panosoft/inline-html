@@ -324,11 +324,100 @@ describe('inline-html', () => {
 			}));
 		});
 
+		describe('link-css', () => {
+		  const filename = path.resolve(__dirname, 'index.html');
+		  const link = (href) => `<link rel="stylesheet" href="${href}"/>`;
+		  it('inline local href', () => co(function * () {
+		    const href = path.resolve(__dirname, 'fixtures/basic.css');
+		    const html = link(href);
+		    const result = yield inline.html(html);
+		    expect(result).to.match(/<style>[^]*basic.css[^]*<\/style>/);
+		  }));
+		  it('ignore remote href', () => co(function * () {
+		    const html = link('http://test.com/main.less');
+		    const result = yield inline.html(html);
+		    expect(result).to.equal(html);
+		  }));
+		  it('ignore template expression href', () => co(function * () {
+		    const html = link('{{href}}');
+		    const result = yield inline.html(html);
+		    expect(result).to.equal(html);
+		  }));
+		  it('inline local nested imports', () => co(function * () {
+		    const href = path.resolve(__dirname, 'fixtures/nested-import.css');
+		    const html = link(href);
+		    const result = yield inline.html(html);
+		    return expect(result).to.match(/<style>[^]*basic.css[^]*<\/style>/)
+		      .and.not.match(/@import/);
+		  }));
+		  it('rebase urls relative to html filename', () => co(function * () {
+		    const href = 'fixtures/url.css';
+		    const html = link(href);
+		    const result = yield inline.html(html, { filename });
+		    expect(result).to.match(/<style>[^]*url\('data:.*,.*'\)[^]*<\/style>/);
+		  }));
+		  it('throw error when href invalid', () => co(function * () {
+		    const invalid = 'fixtures/missing.css';
+		    const invalidResolved = path.resolve(path.dirname(filename), invalid);
+		    const html = link(invalid);
+		    try {
+		      yield inline.html(html, { filename });
+		      throw new Error('No error thrown');
+		    }
+		    catch (error) {
+		      expect(error).to.have.property('filename').that.equals(filename);
+		      expect(error).to.have.property('files').that.contains(invalidResolved);
+		    }
+		  }));
+		  it('throw error when import path invalid', () => co(function * () {
+		    const invalid = 'fixtures/invalid-import.css';
+		    const invalidResolved = path.resolve(path.dirname(filename), invalid);
+		    const html = link(invalid);
+		    try {
+		      yield inline.html(html, { filename });
+		      throw new Error('No error thrown');
+		    }
+		    catch (error) {
+		      expect(error).to.have.property('filename').that.equals(invalidResolved);
+		      expect(error).to.have.property('files').that.contains(invalidResolved);
+		    }
+		  }));
+		  it('throw error when css syntax invalid', () => co(function * () {
+		    const invalid = 'fixtures/invalid-syntax.css';
+		    const invalidResolved = path.resolve(path.dirname(filename), invalid);
+		    const html = link(invalid);
+		    try {
+		      yield inline.html(html, { filename });
+		      throw new Error('No error thrown');
+		    }
+		    catch (error) {
+		      expect(error).to.have.property('filename').that.equals(invalidResolved);
+		      expect(error).to.have.property('files').that.contains(invalidResolved);
+		    }
+		  }));
+		  it('include all local hrefs in error.files when error encountered', () => co(function * () {
+		    const valid = 'fixtures/basic.css';
+		    const invalid = 'fixtures/missing.css';
+		    const validResolved = path.resolve(path.dirname(filename), valid);
+		    const invalidResolved = path.resolve(path.dirname(filename), invalid);
+		    const html = `${link(invalid)}${link(valid)}`;
+		    try {
+		      yield inline.html(html, { filename });
+		      throw new Error('No error thrown');
+		    }
+		    catch (error) {
+		      expect(error).to.have.property('filename').that.equals(filename);
+		      expect(error).to.have.property('files').that.contains(validResolved);
+		      expect(error).to.have.property('files').that.contains(invalidResolved);
+		    }
+		  }));
+		});
+
 		describe('link-less', () => {
 			it('inline local href', () => {
 				const filename = path.resolve(__dirname, 'fixtures/basic.less');
 				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
-				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/);
+				return expect(inline.html(html)).to.eventually.match(/<style>[^]*basic.less[^]*<\/style>/);
 			});
 			it('ignore remote href', () => {
 				const html = `<link rel="stylesheet/less" href="http://test.com/main.less"/>`;
@@ -341,14 +430,14 @@ describe('inline-html', () => {
 			it('inline local nested imports', () => {
 				const filename = path.resolve(__dirname, 'fixtures/nested-import.less');
 				const html = `<link rel="stylesheet/less" href="${filename}"/>`;
-				return expect(inline.html(html)).to.eventually.match(/<style>[^]*<\/style>/)
+				return expect(inline.html(html)).to.eventually.match(/<style>[^]*basic.less[^]*basic.css[^]*<\/style>/)
 					.and.not.match(/@import/);
 			});
 			it('rebase urls relative to html filename', () => {
 				const filename = path.resolve(__dirname, 'index.html');
-				const href = 'fixtures/basic.less';
+				const href = 'fixtures/url.less';
 				const html = `<link rel="stylesheet/less" href="${href}"/>`;
-				return expect(inline.html(html, { filename })).to.eventually.match(/<style>[^]*<\/style>/);
+				return expect(inline.html(html, { filename })).to.eventually.match(/<style>[^]*url\('data:.*,.*'\)[^]*<\/style>/);
 			});
 			it('throw error when link href invalid', () => co(function * () {
 				const filename = path.resolve(__dirname, 'index.html');
@@ -392,20 +481,24 @@ describe('inline-html', () => {
 					expect(error).to.have.property('files').that.contains(lessFilename);
 				}
 			}));
-			it('throw error when less url invalid', () => co(function * () {
-				const filename = path.resolve(__dirname, 'fixtures/index.html');
-				const lessBasename = 'invalid-url.less';
-				const badUrl = path.resolve(path.dirname(filename), 'missing.png');
-				const html = `<link rel="stylesheet/less" href="${lessBasename}">`;
+			it('include all local hrefs in error.files when error encountered', () => co(function * () {
+				const filename = path.resolve(__dirname, 'index.html');
+				const valid = 'fixtures/basic.css';
+				const invalid = 'fixtures/missing.css';
+				const validResolved = path.resolve(path.dirname(filename), valid);
+				const invalidResolved = path.resolve(path.dirname(filename), invalid);
+				const html = `
+					<link rel="stylesheet/less" href="${invalid}">
+					<link rel="stylesheet/less" href="${valid}">
+				`;
 				try {
 					yield inline.html(html, {filename});
 					throw new Error('No error thrown');
 				}
 				catch (error) {
-					// expect error.filename to be html file, not less file, since images
-					// aren't inlined until after the compiled less has been inlined into the html.
 					expect(error).to.have.property('filename').that.equals(filename);
-					expect(error).to.have.property('files').that.contains(badUrl);
+					expect(error).to.have.property('files').that.contains(validResolved);
+					expect(error).to.have.property('files').that.contains(invalidResolved);
 				}
 			}));
 		});

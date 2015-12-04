@@ -3,8 +3,8 @@
   "version": "0.2.2",
   "description": "Inline local assets referenced in an HTML document.",
   "repository": "panosoft/inline-html",
-  "engines" : {
-    "node" : ">=4.0.0"
+  "engines": {
+    "node": ">=4.0.0"
   },
   "main": "lib/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "less": "^2.5.1",
     "mz": "^2.0.0",
     "postcss": "^5.0.12",
+    "postcss-import": "^7.1.3",
     "postcss-url": "^5.0.0",
     "ramda": "^0.18.0",
     "string": "^3.3.0"

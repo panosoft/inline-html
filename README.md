@@ -11,9 +11,11 @@ The following HTML elements and CSS data types are inlined:
 
 - Scripts - The source path is read and inlined.
 
-- Images - The source path is replaced with a datauri.
+- Linked CSS stylesheets - The stylesheet is read and inlined within a `<style>` element. Note that nested `@import`'s are also inlined.
 
-- Linked LESS stylesheets - The LESS is compiled and the result is inlined within a `<style>` element. Note that `@imports` are processed as well.
+- Linked LESS stylesheets - The LESS is compiled and the output is inlined within a `<style>` element. Note that `@import`'s are also inlined.
+
+- Images - The source path is replaced with a datauri.
 
 - CSS url data types - The reference path is replaced with a datauri. These can be used in linked stylesheets, style elements, and element style attributes.
 
@@ -32,7 +34,6 @@ Assuming ...
 - `main.less`
 
 	```css
-	@import (less) 'main.css';
 	div { background-image: url('path/to/file'); }
 	```
 
@@ -51,6 +52,7 @@ var inline = require('inline-html');
 co(function * () {
 	var html = `
 		<script src="main.js"></script>
+		<link rel="stylesheet" href="main.css"/>
 		<link rel="stylesheet/less" href="main.less"/>
 		<style> div { background-image: url('path/to/file'); } </style>
 		<div style="background-image: url('path/to/file');"></div>
@@ -59,13 +61,9 @@ co(function * () {
 	html = yield inline.html(html);
 	console.log(html);
 	/**
-		<script>
-			var a = 1;
-		</script>
-		<style>
-			@font-face { src: url('data:...'); }
-			div { background-image: url('data:...'); }
-		</style>
+		<script> var a = 1; </script>
+		<style> @font-face { src: url('data:...'); } </style>
+		<style> div { background-image: url('data:...'); } </style>
 		<style> div { background-image: url('data:...'); } </style>
 		<div style="background-image: url('data:...');"></div>
 		<img src="data:..."/>
