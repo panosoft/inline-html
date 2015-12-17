@@ -85,7 +85,7 @@ npm install inline-html
 
 ---
 
-<a name="html"/>
+<a name="html"></a>
 ### inline.html ( html [, options] )
 
 Parses an HTML string and embeds referenced local assets into the HTML.
@@ -115,7 +115,7 @@ co(function * () {
 
 ---
 
-<a name="file"/>
+<a name="file"></a>
 ### inline.file ( filename [, options] )
 
 Reads an HTML file and embeds referenced local assets into the HTML.
@@ -144,7 +144,7 @@ co(function * () {
 
 ---
 
-<a name="results"/>
+<a name="results"></a>
 ### Results
 
 The `Promise` returned by these functions is optionally fulfilled with a `results` object that has the following properties:
